@@ -1,11 +1,13 @@
 import uuid
 import datetime
-from web import sparqlQuery, sparqlUpdate, graph, thelogger
-from flask import jsonify
-from rdflib.namespace import DC
-from esscape_helpers import sparql_escape
 import logging
 import os
+from web import graph
+from flask import jsonify
+from rdflib.namespace import DC
+from escape_helpers import sparql_escape
+from SPARQLWrapper import SPARQLWrapper, JSON
+
 
 def generate_uuid():
     """Generates a unique user id based the host ID and current time"""
@@ -19,12 +21,11 @@ log_levels = {'DEBUG': logging.DEBUG,
               'WARNING': logging.WARNING,
               'ERROR': logging.ERROR,
               'CRITICAL': logging.CRITICAL}
-# log_dir = '/logs'
-log_dir = 'logs/'
+log_dir = '/logs'
 if not os.path.exists(log_dir): os.makedirs(log_dir)
-# logging.basicConfig(filename='/logs.log', level=log_levels.get(os.environ.get('LOG_LEVEL').upper()))
-logging.basicConfig(filename='logs/logs.log', level=log_levels.get('INFO'))
+logging.basicConfig(filename='/logs.log', level=log_levels.get(os.environ.get('LOG_LEVEL').upper()))
 thelogger = logging.getLogger('')
+
 
 def log(msg):
     """write a log message to the terminal"""
@@ -62,12 +63,15 @@ def validate_resource_type(expected_type, data):
                      ", instead of " + str(data['type']) + ".", 409)
 
 
+sparqlQuery = SPARQLWrapper(os.environ.get('MU_SPARQL_ENDPOINT'), returnFormat=JSON)
+sparqlUpdate = SPARQLWrapper(os.environ.get('MU_SPARQL_UPDATEPOINT'), returnFormat=JSON)
+
 def query(the_query):
     """Execute a sparql query on the tripple store and returns the results
     in the given returnFormat (JSON by default)."""
     log("execute query: \n" + the_query)
     sparqlQuery.setQuery(the_query)
-    return sparqlQuery.query()
+    return sparqlQuery.query().convert()
 
 
 def update(the_query):
@@ -81,10 +85,10 @@ def update(the_query):
 def update_modified(subject, modified=datetime.time()):
     query = " WITH <%s> " % graph
     query += " DELETE {"
-    query += "   < %s > < %s > %s ." % (subject, DC.Modified, modified)
+    query += "   < %s > < %s > %s ." % (subject, DC.Modified, sparql_escape(modified))
     query += " }"
     query += " WHERE {"
-    query += "   <%s> <%s> %s ." % (subject, DC.Modified, modified)
+    query += "   <%s> <%s> %s ." % (subject, DC.Modified, sparql_escape(modified))
     query += " }"
     update(query)
 
@@ -102,7 +106,7 @@ def verify_string_parameter(parameter):
         if "delete" in parameter.lower(): error("unauthorized delete in string parameter")
         if "load" in parameter.lower(): error("unauthorized load in string parameter")
         if "clear" in parameter.lower(): error("unauthorized clear in string parameter")
-        if "create" in parameter.lower(): error( "unauthorized create in string parameter")
+        if "create" in parameter.lower(): error("unauthorized create in string parameter")
         if "drop" in parameter.lower(): error("unauthorized drop in string parameter")
         if "copy" in parameter.lower(): error("unauthorized copy in string parameter")
         if "move" in parameter.lower(): error("unauthorized move in string parameter")

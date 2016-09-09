@@ -1,5 +1,3 @@
 flask
 SPARQLWrapper
 rdflib
-ordf
-pandas
