@@ -13,9 +13,7 @@ def generate_uuid():
     """Generates a unique user id based the host ID and current time"""
     return str(uuid.uuid1())
 
-#############
-## Logging ##
-#############
+
 log_levels = {'DEBUG': logging.DEBUG,
               'INFO': logging.INFO,
               'WARNING': logging.WARNING,
@@ -23,12 +21,12 @@ log_levels = {'DEBUG': logging.DEBUG,
               'CRITICAL': logging.CRITICAL}
 log_dir = '/logs'
 if not os.path.exists(log_dir): os.makedirs(log_dir)
-logging.basicConfig(filename='/logs.log', level=log_levels.get(os.environ.get('LOG_LEVEL').upper()))
+logging.basicConfig(filename=log_dir+'/logs.log', level=log_levels.get(os.environ.get('LOG_LEVEL').upper()))
 thelogger = logging.getLogger('')
 
-
 def log(msg):
-    """write a log message to the terminal"""
+    """write a log message to the log file. Logs are written to the `/logs`
+     directory in the docker container."""
     thelogger.info(msg)
 
 
@@ -43,7 +41,7 @@ def rewrite_url_header(request):
 
 
 def error(msg, status=400):
-    """Returns an error response object with given error message and status code"""
+    """Returns a JSONAPI compliant error response with the given status code (400 by default)."""
     response = jsonify({'message': msg})
     response.status_code = status
     return response
@@ -57,7 +55,8 @@ def validate_json_api_content_type(request):
 
 
 def validate_resource_type(expected_type, data):
-    """Validate whether the given data is of the expected data type"""
+    """Validate whether the type specified in the JSON data is equal to the expected type.
+    Returns a `409` otherwise."""
     if data['type'] is not expected_type:
         return error("Incorrect type. Type must be " + str(expected_type) +
                      ", instead of " + str(data['type']) + ".", 409)
@@ -67,7 +66,7 @@ sparqlQuery = SPARQLWrapper(os.environ.get('MU_SPARQL_ENDPOINT'), returnFormat=J
 sparqlUpdate = SPARQLWrapper(os.environ.get('MU_SPARQL_UPDATEPOINT'), returnFormat=JSON)
 
 def query(the_query):
-    """Execute a sparql query on the tripple store and returns the results
+    """Execute the given SPARQL query (select/ask/construct)on the tripple store and returns the results
     in the given returnFormat (JSON by default)."""
     log("execute query: \n" + the_query)
     sparqlQuery.setQuery(the_query)
@@ -75,14 +74,16 @@ def query(the_query):
 
 
 def update(the_query):
-    """Execute a update query on the tripple store, if the given query is no
-    update query, nothing happens."""
+    """Execute the given update SPARQL query on the tripple store,
+    if the given query is no update query, nothing happens."""
     sparqlUpdate.setQuery(the_query)
     if sparqlUpdate.isSparqlUpdateRequest():
         sparqlUpdate.query()
 
 
 def update_modified(subject, modified=datetime.time()):
+    """Executes a SPARQL query to update the modification date of the given subject URI (string).
+     The default date is now."""
     query = " WITH <%s> " % graph
     query += " DELETE {"
     query += "   < %s > < %s > %s ." % (subject, DC.Modified, sparql_escape(modified))

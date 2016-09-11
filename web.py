@@ -6,6 +6,11 @@ import json
 
 app = flask.Flask(__name__)
 
+#########################
+## Application methods ##
+#########################
+""" Remove the template methods and implement your own methods here. """
+
 @app.route('/')
 def hello_world():
     return 'Hello world'
@@ -15,12 +20,12 @@ def hello_world():
 def query():
     """Example query: Returns all the triples in the application graph in a JSON
     format."""
-    q =  "SELECT *"
-    q += "WHERE{"
-    q += "  GRAPH <http://mu.semte.ch/application> {"
-    q += "    ?s ?p ?o"
-    q += "  }"
-    q += "}"
+    q =  " SELECT *"
+    q += " WHERE{"
+    q += "   GRAPH <http://mu.semte.ch/application> {"
+    q += "     ?s ?p ?o"
+    q += "   }"
+    q += " }"
     return json.dumps(helpers.query(q))
 
 
@@ -34,5 +39,10 @@ mu_ext = Namespace('http://mu.semte.ch/vocabularies/ext/')
 graph = os.environ.get('MU_APPLICATION_GRAPH')
 SERVICE_RESOURCE_BASE = 'http://mu.semte.ch/services/'
 
+
+#######################
+## Start Application ##
+#######################
 if __name__ == '__main__':
+    debug = True if (os.environ.get('MODE') is 'development') else False
     app.run(debug=True, host='0.0.0.0')
