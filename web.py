@@ -49,7 +49,7 @@ if __name__ == '__main__':
     __builtin__.helpers = helpers
     app_file = os.environ.get('APP_ENTRYPOINT')
     sys.path.append('/ext')
-    __import__("%s" % app_file)
+    exec "from %s import *" % app_file
 
     debug = True if (os.environ.get('MODE') is 'development') else False
     app.run(debug=debug, host='0.0.0.0')
