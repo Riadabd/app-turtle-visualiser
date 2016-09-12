@@ -4,13 +4,23 @@ MAINTAINER Sam Landuydt "sam.landuydt@gmail.com"
 RUN apt-get -y update
 RUN apt-get install -y python-pip python-dev build-essential
 
+ENV APP_ENTRYPOINT web
 ENV LOG_LEVEL info
 ENV MU_SPARQL_ENDPOINT 'http://database:8890/sparql'
 ENV MU_SPARQL_UPDATEPOINT 'http://database:8890/sparql'
 ENV MU_APPLICATION_GRAPH 'http://mu.semte.ch/application'
 
-COPY . /app
-WORKDIR /app
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+ADD . /usr/src/app
+
+RUN ln -s /app /usr/src/app/ext \
+     && cd /usr/src/app \
+     && pip install -r requirements.txt
+
+ONBUILD ADD . /app/
+ONBUILD RUN cd /usr/src/app \
+    && pip install -r requirements.txt
+
 ENTRYPOINT ["python"]
-RUN pip install -r requirements.txt
 CMD ["web.py"]

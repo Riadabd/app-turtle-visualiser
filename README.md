@@ -5,6 +5,7 @@ Template for running Python microservices
 ## Using the template
 
 1) Extend the `samldd/mu-python-template` and set a maintainer.
+
 2) Configure your entrypoint through the environment variable `APP_ENTRYPOINT` (default: `web.py`).
 
 Use the web.py template as a start point for developing your application. Remove the default methods en implement your own.

@@ -1,15 +1,16 @@
 import flask
 import os
+import sys
 import helpers
+import __builtin__
 from rdflib.namespace import Namespace
 import json
 
 app = flask.Flask(__name__)
 
 #########################
-## Application methods ##
+## Example methods ##
 #########################
-""" Remove the template methods and implement your own methods here. """
 
 @app.route('/')
 def hello_world():
@@ -44,5 +45,11 @@ SERVICE_RESOURCE_BASE = 'http://mu.semte.ch/services/'
 ## Start Application ##
 #######################
 if __name__ == '__main__':
+    __builtin__.app = app
+    __builtin__.helpers = helpers
+    app_file = os.environ.get('APP_ENTRYPOINT')
+    sys.path.append('/ext')
+    __import__("%s" % app_file)
+
     debug = True if (os.environ.get('MODE') is 'development') else False
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=debug, host='0.0.0.0')
