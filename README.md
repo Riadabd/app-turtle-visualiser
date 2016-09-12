@@ -8,7 +8,12 @@ Template for running Python microservices
 
 2) Configure your entrypoint through the environment variable `APP_ENTRYPOINT` (default: `web.py`).
 
-Use the web.py template as a start point for developing your application. Remove the default methods en implement your own.
+create the entry point file and add methods with URL's. 
+The flask app is added to the python builtin and can be accessed by using the app variable, as shown in following example:
+
+    @app.route(/exampleMethod)
+    def exampleMethod():
+        return example
 
 ## Example Dockerfile
 
