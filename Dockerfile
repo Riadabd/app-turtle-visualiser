@@ -14,6 +14,9 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 ADD . /usr/src/app
 
+ONBUILD RUN touch /usr/src/app/ext/__init__.py
+ONBUILD RUN touch /usr/src/app/__init__.py
+
 RUN ln -s /app /usr/src/app/ext \
      && cd /usr/src/app \
      && pip install -r requirements.txt

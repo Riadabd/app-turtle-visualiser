@@ -3,6 +3,7 @@ import os
 import sys
 import helpers
 import __builtin__
+from escape_helpers import sparql_escape
 from rdflib.namespace import Namespace
 import json
 
@@ -40,16 +41,15 @@ mu_ext = Namespace('http://mu.semte.ch/vocabularies/ext/')
 graph = os.environ.get('MU_APPLICATION_GRAPH')
 SERVICE_RESOURCE_BASE = 'http://mu.semte.ch/services/'
 
-
 #######################
 ## Start Application ##
 #######################
 if __name__ == '__main__':
     __builtin__.app = app
     __builtin__.helpers = helpers
+    __builtin__.sparql_escape = sparql_escape
     app_file = os.environ.get('APP_ENTRYPOINT')
-    sys.path.append('/ext')
-    exec "from %s import *" % app_file
+    exec "from ext.app.%s import *" % app_file
 
-    debug = True if (os.environ.get('MODE') is 'development') else False
+    debug = True if (os.environ.get('MODE') == "development") else False
     app.run(debug=debug, host='0.0.0.0')
