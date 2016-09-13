@@ -1,6 +1,5 @@
 import flask
 import os
-import sys
 import helpers
 import __builtin__
 from escape_helpers import sparql_escape
@@ -49,6 +48,8 @@ if __name__ == '__main__':
     __builtin__.helpers = helpers
     __builtin__.sparql_escape = sparql_escape
     app_file = os.environ.get('APP_ENTRYPOINT')
+    file = open('ext/app/__init__.py', 'w+')
+    file.close()
     exec "from ext.app.%s import *" % app_file
 
     debug = True if (os.environ.get('MODE') == "development") else False

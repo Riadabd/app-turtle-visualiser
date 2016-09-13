@@ -8,7 +8,9 @@ Template for running Python microservices
 
 2) Configure your entrypoint through the environment variable `APP_ENTRYPOINT` (default: `web.py`).
 
-create the entry point file and add methods with URL's. 
+3) Write the python requirements in a requirements.txt file. (Flask, SPARQLWrapper and rdflib are standard installed)
+
+Create the entry point file and add methods with URL's. 
 The flask app is added to the python builtin and can be accessed by using the app variable, as shown in following example:
 
     @app.route(/exampleMethod)

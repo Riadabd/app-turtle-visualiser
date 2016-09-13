@@ -26,4 +26,6 @@ ONBUILD RUN cd /usr/src/app \
     && pip install -r requirements.txt
 
 ENTRYPOINT ["python"]
+
+CMD ["touch" "touch /usr/src/app/ext/app/__init__.py"]
 CMD ["web.py"]
