@@ -50,8 +50,6 @@ if __name__ == '__main__':
     app_file = os.environ.get('APP_ENTRYPOINT')
     f = open('ext/app/__init__.py', 'w+')
     f.close()
-    f = open('/usr/src/app/ext/__init__.py', 'w+')
-    f.close()
     f = open('/app/__init__.py', 'w+')
     f.close()
     exec "from ext.app.%s import *" % app_file
