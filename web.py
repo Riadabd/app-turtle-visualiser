@@ -55,4 +55,4 @@ if __name__ == '__main__':
     exec "from ext.app.%s import *" % app_file
 
     debug = True if (os.environ.get('MODE') == "development") else False
-    app.run(debug=debug, host='0.0.0.0')
+    app.run(debug=debug, host='0.0.0.0', port=80)

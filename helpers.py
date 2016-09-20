@@ -65,6 +65,7 @@ def validate_resource_type(expected_type, data):
 sparqlQuery = SPARQLWrapper(os.environ.get('MU_SPARQL_ENDPOINT'), returnFormat=JSON)
 sparqlUpdate = SPARQLWrapper(os.environ.get('MU_SPARQL_UPDATEPOINT'), returnFormat=JSON)
 
+
 def query(the_query):
     """Execute the given SPARQL query (select/ask/construct)on the tripple store and returns the results
     in the given returnFormat (JSON by default)."""
@@ -103,12 +104,12 @@ def update_modified(subject, modified=datetime.time()):
 
 def verify_string_parameter(parameter):
     if parameter and type(parameter) is str:
-        if "insert" in parameter.lower(): error("unauthorized insert in string parameter")
-        if "delete" in parameter.lower(): error("unauthorized delete in string parameter")
-        if "load" in parameter.lower(): error("unauthorized load in string parameter")
-        if "clear" in parameter.lower(): error("unauthorized clear in string parameter")
-        if "create" in parameter.lower(): error("unauthorized create in string parameter")
-        if "drop" in parameter.lower(): error("unauthorized drop in string parameter")
-        if "copy" in parameter.lower(): error("unauthorized copy in string parameter")
-        if "move" in parameter.lower(): error("unauthorized move in string parameter")
-        if "add" in parameter.lower(): error("unauthorized add in string parameter")
+        if "insert" in parameter.lower(): return error("unauthorized insert in string parameter")
+        if "delete" in parameter.lower(): return error("unauthorized delete in string parameter")
+        if "load" in parameter.lower(): return error("unauthorized load in string parameter")
+        if "clear" in parameter.lower(): return error("unauthorized clear in string parameter")
+        if "create" in parameter.lower(): return error("unauthorized create in string parameter")
+        if "drop" in parameter.lower(): return error("unauthorized drop in string parameter")
+        if "copy" in parameter.lower(): return error("unauthorized copy in string parameter")
+        if "move" in parameter.lower(): return error("unauthorized move in string parameter")
+        if "add" in parameter.lower(): return error("unauthorized add in string parameter")

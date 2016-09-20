@@ -1,8 +1,5 @@
-FROM ubuntu:latest
+FROM python:2.7
 MAINTAINER Sam Landuydt "sam.landuydt@gmail.com"
-
-RUN apt-get -y update
-RUN apt-get install -y python-pip python-dev build-essential
 
 ENV APP_ENTRYPOINT web
 ENV LOG_LEVEL info
@@ -19,10 +16,10 @@ RUN ln -s /app /usr/src/app/ext \
      && pip install -r requirements.txt
 
 ONBUILD ADD . /app/
-ONBUILD RUN cd /usr/src/app \
+ONBUILD RUN cd /app/ \
     && pip install -r requirements.txt
 
-ENTRYPOINT ["python"]
+EXPOSE 80
 
 CMD ["touch" "touch /usr/src/app/ext/app/__init__.py"]
-CMD ["web.py"]
+CMD python web.py
