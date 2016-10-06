@@ -82,7 +82,7 @@ def update(the_query):
         sparqlUpdate.query()
 
 
-def update_modified(subject, modified=datetime.time()):
+def update_modified(subject, modified=datetime.datetime.now()):
     """Executes a SPARQL query to update the modification date of the given subject URI (string).
      The default date is now."""
     query = " WITH <%s> " % graph

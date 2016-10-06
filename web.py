@@ -4,20 +4,14 @@ import helpers
 import __builtin__
 from escape_helpers import sparql_escape
 from rdflib.namespace import Namespace
-import json
 
 app = flask.Flask(__name__)
 
-#########################
-## Example methods ##
-#########################
+####################
+## Example method ##
+####################
 
-@app.route('/')
-def hello_world():
-    return 'Hello world'
-
-
-@app.route('/example')
+@app.route('/templateExample/')
 def query():
     """Example query: Returns all the triples in the application graph in a JSON
     format."""
@@ -27,8 +21,7 @@ def query():
     q += "     ?s ?p ?o"
     q += "   }"
     q += " }"
-    return json.dumps(helpers.query(q))
-
+    return flask.jsonify(helpers.query(q))
 
 ##################
 ## Vocabularies ##
@@ -52,7 +45,9 @@ if __name__ == '__main__':
     f.close()
     f = open('/app/__init__.py', 'w+')
     f.close()
-    exec "from ext.app.%s import *" % app_file
-
+    try:
+        exec "from ext.app.%s import *" % app_file
+    except Exception:
+        helpers.log("WEB FILE NOT FOUND!")
     debug = True if (os.environ.get('MODE') == "development") else False
     app.run(debug=debug, host='0.0.0.0', port=80)
