@@ -105,9 +105,9 @@ For example:
 
     query =  " INSERT DATA {"
     query += "   GRAPH <http://mu.semte.ch/application> {"
-    query += "     < %s > a <#{RDF::Vocab::FOAF.Person}> ;" % user_uri
-    query += "                   <#{RDF::Vocab::FOAF.name}> %s ;" % sparql_escape(name)
-    query += "                   <#{RDF::Vocab::DC.created}> %s ." % sparql_escape(date)
+    query += "     < %s > a <foaf:Person> ;" % user_uri
+    query += "                   <foaf:name> %s ;" % sparql_escape(name)
+    query += "                   <dc:created> %s ." % sparql_escape(date)
     query += "   }"
     query += " }"
 
