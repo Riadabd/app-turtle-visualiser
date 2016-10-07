@@ -47,7 +47,7 @@ if __name__ == '__main__':
     f.close()
     try:
         exec "from ext.app.%s import *" % app_file
-    except Exception:
-        helpers.log("WEB FILE NOT FOUND!")
+    except Exception as e:
+        helpers.log(str(e))
     debug = True if (os.environ.get('MODE') == "development") else False
     app.run(debug=debug, host='0.0.0.0', port=80)
