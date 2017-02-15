@@ -13,7 +13,7 @@ Template for running Python microservices
 Create the entry point file and add methods with URL's. 
 The flask app is added to the python builtin and can be accessed by using the app variable, as shown in following example:
 
-    @app.route(/exampleMethod)
+    @app.route("/exampleMethod")
     def exampleMethod():
         return example
 
