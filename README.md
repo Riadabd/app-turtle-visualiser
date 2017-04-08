@@ -19,7 +19,7 @@ The flask app is added to the python builtin and can be accessed by using the ap
 
 ## Example Dockerfile
 
-    FROM samldd/mu-python-template:latest
+    FROM semtech/mu-python-template
     MAINTAINER Sam Landuydt <sam.landuydt@gmail.com>
     # ONBUILD of mu-python-template takes care of everything
 
@@ -45,7 +45,7 @@ To use the template while developing your app, start a container in development 
 
     docker run --volume /path/to/your/code:/app
                -e MODE=development
-               -d python-template
+               -d semtech/mu-python-template
 
 Code changes will be automatically picked up by Flask.
 
@@ -112,4 +112,4 @@ For example:
     query += " }"
 
 ## Example
-There is one example method in the template: "/templateExample/" this methods returns all trippels in the tripple store from the sparql endpoint (beware for big databases!).
+There is one example method in the template: `GET /templateExample`. This method returns all triples in the triplestore from the SPARQL endpoint (beware for big databases!).
