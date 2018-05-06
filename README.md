@@ -97,10 +97,10 @@ Executes the given SPARQL update query.
 Executes a SPARQL query to update the modification date of the given subject URI (string).
 The date defaults to now.
 
-### sparql_escape(var)
+### sparql_escape ; sparql_escape_{string|uri|date|datetime|time|bool|int|float}(value)
 This method can be used to avoid SPARQL injection by escaping user input while constructing a SPARQL query.
 The method checks the type of the given variable and returns the correct object string format,
-depending on the type of the object. Current supported variables are: datetime.time, datetime.date, str, int, float and boolean.
+depending on the type of the object. Current supported variables are: `datetime.time`, `datetime.date`, `str`, `int`, `float` and `boolean`.
 For example:
 
     query =  " INSERT DATA {"
@@ -110,6 +110,8 @@ For example:
     query += "                   <dc:created> %s ." % sparql_escape(date)
     query += "   }"
     query += " }"
+    
+Next to the `sparql_escape`, the template also provides a helper function per datatype that takes any value as parameter. E.g. `sparql_escape_uri("http://mu.semte.ch/application")`.
 
 ## Example
 There is one example method in the template: `GET /templateExample`. This method returns all triples in the triplestore from the SPARQL endpoint (beware for big databases!).
