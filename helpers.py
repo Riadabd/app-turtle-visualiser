@@ -29,10 +29,10 @@ thelogger.addHandler(fileHandler)
 consoleHandler = logging.StreamHandler(stream=sys.stdout)# or stderr?
 thelogger.addHandler(consoleHandler)
 
-def log(msg):
+def log(msg, *args, **kwargs):
     """write a log message to the log file. Logs are written to the `/logs`
      directory in the docker container."""
-    thelogger.info(msg)
+    thelogger.info(msg, *args, **kwargs)
 
 
 def session_id_header(request):
