@@ -5,7 +5,7 @@ def sparql_escape_string(obj):
     obj = str(obj)
     def replacer(a):
         return "\\"+a.group(0)
-    return '"' + re.sub(r'[\\\'"]', replacer, obj) + '"'
+    return '"""' + re.sub(r'[\\\'"]', replacer, obj) + '"""'
 
 def sparql_escape_datetime(obj):
     if isinstance(obj, datetime.datetime):
