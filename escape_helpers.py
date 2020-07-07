@@ -72,17 +72,16 @@ def sparql_escape_uri(obj):
 def sparql_escape(obj):
     if isinstance(obj, str):
         return sparql_escape_string(obj)
-    elif isinstance(obj, datetime.datetime):
+    if isinstance(obj, datetime.datetime):
         return sparql_escape_datetime(obj)
-    elif isinstance(obj, datetime.date):
+    if isinstance(obj, datetime.date):
         return sparql_escape_date(obj)
-    elif isinstance(obj, datetime.time):
+    if isinstance(obj, datetime.time):
         return sparql_escape_time(obj)
-    elif isinstance(obj, int):
+    if isinstance(obj, int):
         return sparql_escape_int(obj)
-    elif isinstance(obj, float):
+    if isinstance(obj, float):
         return sparql_escape_float(obj)
-    elif isinstance(obj, bool):
+    if isinstance(obj, bool):
         return sparql_escape_bool(obj)
-    else:
-        return ""
+    return ""
