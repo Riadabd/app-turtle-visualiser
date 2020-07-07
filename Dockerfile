@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.8
 MAINTAINER Michaël Dierick "michael@dierick.io"
 
 ENV APP_ENTRYPOINT web
