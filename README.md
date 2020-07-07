@@ -10,7 +10,7 @@ Template for running Python microservices
 
 3) Write the python requirements in a requirements.txt file. (Flask, SPARQLWrapper and rdflib are standard installed)
 
-Create the entry point file and add methods with URL's. 
+Create the entry point file and add methods with URL's.
 The flask app is added to the python builtin and can be accessed by using the app variable, as shown in following example:
 
     @app.route("/exampleMethod")
@@ -45,6 +45,7 @@ To use the template while developing your app, start a container in development 
 
     docker run --volume /path/to/your/code:/app
                -e MODE=development
+               -p 80:80
                -d semtech/mu-python-template
 
 Code changes will be automatically picked up by Flask.
@@ -111,6 +112,8 @@ For example:
     query += "   }"
     query += " }"
     
+Next to the `sparql_escape`, the template also provides a helper function per datatype that takes any value as parameter. E.g. `sparql_escape_uri("http://mu.semte.ch/application")`.
+
 Next to the `sparql_escape`, the template also provides a helper function per datatype that takes any value as parameter. E.g. `sparql_escape_uri("http://mu.semte.ch/application")`.
 
 ## Example

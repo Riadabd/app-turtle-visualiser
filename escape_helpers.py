@@ -16,7 +16,7 @@ def sparql_escape_datetime(obj):
         return '"{}"^^xsd:dateTime'.format(obj.isoformat())
     except ValueError as e: # Failed casting to string or invalid dateTime format
         raise e
-  
+
 def sparql_escape_date(obj):
     if isinstance(obj, datetime.date):
         return '"{}"^^xsd:date'.format(obj.isoformat())
@@ -25,7 +25,7 @@ def sparql_escape_date(obj):
         return '"{}"^^xsd:date'.format(obj.isoformat())
     except ValueError as e: # Failed casting to string or invalid date format
         raise e
-  
+
 def sparql_escape_time(obj):
     if isinstance(obj, datetime.time):
         obj = obj.replace(microsecond=0) # xsd doesn't support microseconds in ISO time format
@@ -35,7 +35,7 @@ def sparql_escape_time(obj):
         return '"{}"^^xsd:time'.format(obj.isoformat())
     except ValueError as e: # Failed casting to string or invalid time format
         raise e
-  
+
 def sparql_escape_int(obj):
     if isinstance(obj, int):
         return '"{}"^^xsd:integer'.format(obj)
