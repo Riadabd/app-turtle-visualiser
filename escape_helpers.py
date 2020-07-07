@@ -59,17 +59,20 @@ def sparql_escape_uri(obj):
 
 def sparql_escape(obj):
     if isinstance(obj, str):
-        return sparql_escape_string(obj)
-    if isinstance(obj, datetime.datetime):
-        return sparql_escape_datetime(obj)
-    if isinstance(obj, datetime.date):
-        return sparql_escape_date(obj)
-    if isinstance(obj, datetime.time):
-        return sparql_escape_time(obj)
-    if isinstance(obj, int):
-        return sparql_escape_int(obj)
-    if isinstance(obj, float):
-        return sparql_escape_float(obj)
-    if isinstance(obj, bool):
-        return sparql_escape_bool(obj)
-    return ""
+        escaped_val = sparql_escape_string(obj)
+    elif isinstance(obj, datetime.datetime):
+        escaped_val = sparql_escape_datetime(obj)
+    elif isinstance(obj, datetime.date):
+        escaped_val = sparql_escape_date(obj)
+    elif isinstance(obj, datetime.time):
+        escaped_val = sparql_escape_time(obj)
+    elif isinstance(obj, int):
+        escaped_val = sparql_escape_int(obj)
+    elif isinstance(obj, float):
+        escaped_val = sparql_escape_float(obj)
+    elif isinstance(obj, bool):
+        escaped_val = sparql_escape_bool(obj)
+    else:
+        warn("Unknown escape type '{}'. Escaping as string".format(type(obj)))
+        escaped_val = sparql_escape_string(obj)
+    return escaped_val
