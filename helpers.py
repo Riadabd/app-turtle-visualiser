@@ -3,12 +3,12 @@ import datetime
 import logging
 import os
 import sys
-from web import graph
 from flask import jsonify
 from rdflib.namespace import DC
 from escape_helpers import sparql_escape
 from SPARQLWrapper import SPARQLWrapper, JSON
 
+MU_APPLICATION_GRAPH = os.environ.get('MU_APPLICATION_GRAPH')
 
 def generate_uuid():
     """Generates a unique user id based the host ID and current time"""
@@ -90,7 +90,7 @@ def update(the_query):
 def update_modified(subject, modified=datetime.datetime.now()):
     """Executes a SPARQL query to update the modification date of the given subject URI (string).
      The default date is now."""
-    query = " WITH <%s> " % graph
+    query = " WITH <%s> " % MU_APPLICATION_GRAPH
     query += " DELETE {"
     query += "   < %s > < %s > %s ." % (subject, DC.Modified, sparql_escape(modified))
     query += " }"
@@ -100,7 +100,7 @@ def update_modified(subject, modified=datetime.datetime.now()):
     update(query)
 
     query = " INSERT DATA {"
-    query += "   GRAPH <%s> {" % graph
+    query += "   GRAPH <%s> {" % MU_APPLICATION_GRAPH
     query += "     <%s> <%s> %s ." % (subject, DC.Modified, sparql_escape(modified))
     query += "   }"
     query += " }"

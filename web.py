@@ -30,7 +30,6 @@ mu = Namespace('http://mu.semte.ch/vocabularies/')
 mu_core = Namespace('http://mu.semte.ch/vocabularies/core/')
 mu_ext = Namespace('http://mu.semte.ch/vocabularies/ext/')
 
-graph = os.environ.get('MU_APPLICATION_GRAPH')
 SERVICE_RESOURCE_BASE = 'http://mu.semte.ch/services/'
 
 #######################
