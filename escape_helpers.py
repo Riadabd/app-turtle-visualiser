@@ -13,21 +13,21 @@ def sparql_escape_datetime(obj):
     if not isinstance(obj, datetime.datetime):
         warn("You are escaping something that isn't a datetime with \
         the 'sparql_escape_datetime'-method. Implicit casting will occurr.")
-        obj = datetime.datetime.strptime(str(obj), "%Y-%m-%dT%H:%M:%S")
+        obj = datetime.datetime.fromisoformat(str(obj))
     return '"{}"^^xsd:dateTime'.format(obj.isoformat(timespec="seconds"))
 
 def sparql_escape_date(obj):
     if not isinstance(obj, datetime.date):
         warn("You are escaping something that isn't a date with \
         the 'sparql_escape_date'-method. Implicit casting will occurr.")
-        obj = datetime.datetime.strptime(str(obj), "%Y-%m-%d").date()
+        obj = datetime.date.fromisoformat(str(obj))
     return '"{}"^^xsd:date'.format(obj.isoformat())
 
 def sparql_escape_time(obj):
     if not isinstance(obj, datetime.time):
         warn("You are escaping something that isn't a time with \
         the 'sparql_escape_time'-method. Implicit casting will occurr.")
-        obj = datetime.datetime.strptime(str(obj), "%H:%M:%S").time()
+        obj = datetime.time.fromisoformat(str(obj))
     return '"{}"^^xsd:time'.format(obj.isoformat(timespec="seconds"))
 
 def sparql_escape_int(obj):
