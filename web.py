@@ -11,22 +11,6 @@ from escape_helpers import sparql_escape
 # WSGI variable name used by the server
 app = flask.Flask(__name__)
 
-####################
-## Example method ##
-####################
-
-@app.route('/templateExample/')
-def query():
-    """Example query: Returns all the triples in the application graph in a JSON
-    format."""
-    q =  " SELECT *"
-    q += " WHERE{"
-    q += "   GRAPH <http://mu.semte.ch/application> {"
-    q += "     ?s ?p ?o"
-    q += "   }"
-    q += " }"
-    return flask.jsonify(helpers.query(q))
-
 ##################
 ## Vocabularies ##
 ##################
