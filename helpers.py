@@ -10,16 +10,14 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 MU_APPLICATION_GRAPH = os.environ.get('MU_APPLICATION_GRAPH')
 
-def generate_uuid():
-    """Generates a unique user id based the host ID and current time"""
-    return str(uuid.uuid1())
-
-
-log_levels = {'DEBUG': logging.DEBUG,
-              'INFO': logging.INFO,
-              'WARNING': logging.WARNING,
-              'ERROR': logging.ERROR,
-              'CRITICAL': logging.CRITICAL}
+# TODO: Figure out how logging works when production uses multiple workers
+log_levels = {
+    'DEBUG': logging.DEBUG,
+    'INFO': logging.INFO,
+    'WARNING': logging.WARNING,
+    'ERROR': logging.ERROR,
+    'CRITICAL': logging.CRITICAL
+}
 log_dir = '/logs'
 if not os.path.exists(log_dir): os.makedirs(log_dir)
 thelogger = logging.getLogger('')
@@ -28,6 +26,11 @@ fileHandler = logging.FileHandler("{0}/{1}.log".format(log_dir, 'logs'))
 thelogger.addHandler(fileHandler)
 consoleHandler = logging.StreamHandler(stream=sys.stdout)# or stderr?
 thelogger.addHandler(consoleHandler)
+
+def generate_uuid():
+    """Generates a unique user id based the host ID and current time"""
+    return str(uuid.uuid1())
+
 
 def log(msg, *args, **kwargs):
     """write a log message to the log file. Logs are written to the `/logs`
