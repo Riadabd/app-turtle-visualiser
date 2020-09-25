@@ -1,27 +1,41 @@
 # Mu Python template
 
-Template for running Python microservices
+Template for [mu.semte.ch](http://mu.semte.ch)-microservices written in Python3. Based on the [Flask](https://palletsprojects.com/p/flask/)-framework.
 
-## Using the template
+## Quickstart
 
-1) Extend the `semtech/mu-python-template` and set a maintainer.
+Create a `Dockerfile` which extends the `semtech/mu-python-template`-image and set a maintainer.
+```docker
+FROM semtech/mu-python-template
+MAINTAINER Sam Landuydt <sam.landuydt@gmail.com>
+```
 
-2) Configure your entrypoint through the environment variable `APP_ENTRYPOINT` (default: `web.py`).
+Create a `web.py` entrypoint-file. (naming of the entrypoint can be configured through `APP_ENTRYPOINT`)
+```python
+@app.route("/hello")
+def hello():
+    return "Hello from the mu-python-template!"
+```
 
-3) Write the python requirements in a requirements.txt file. (Flask, SPARQLWrapper and rdflib are standard installed)
+Build the Docker-image for your service
+```sh
+docker build -t my-python-service .
+```
 
-Create the entry point file and add methods with URL's.
-The flask app is added to the python builtin and can be accessed by using the app variable, as shown in following example:
+Run your service
+```sh
+docker run -p 8080:80
+```
 
-    @app.route("/exampleMethod")
-    def exampleMethod():
-        return example
+You now should be able to access your service's endpoint
+```sh
+curl localhost:8080/hello
+```
 
-## Example Dockerfile
+## Dependencies
 
-    FROM semtech/mu-python-template
-    MAINTAINER Sam Landuydt <sam.landuydt@gmail.com>
-    # ONBUILD of mu-python-template takes care of everything
+If your service needs external libraries other than the ones already provided by the template (Flask, SPARQLWrapper and rdflib), you can specify those in a [`requirements.txt`](https://pip.pypa.io/en/stable/reference/pip_install/#requirements-file-format)-file. The template will take care of installing them when you build your Docker image.
+
 
 ## Configuration
 
