@@ -5,6 +5,7 @@ import builtins
 from escape_helpers import sparql_escape
 from rdflib.namespace import Namespace
 
+# WSGI variable name used by the server
 app = flask.Flask(__name__)
 
 ####################
@@ -32,19 +33,20 @@ mu_ext = Namespace('http://mu.semte.ch/vocabularies/ext/')
 
 SERVICE_RESOURCE_BASE = 'http://mu.semte.ch/services/'
 
+builtins.app = app
+builtins.helpers = helpers
+builtins.sparql_escape = sparql_escape
+app_file = os.environ.get('APP_ENTRYPOINT')
+f = open('/app/__init__.py', 'w+')
+f.close()
+try:
+    exec("from ext.app.%s import *" % app_file)
+except Exception as e:
+    helpers.log(str(e))
+
 #######################
 ## Start Application ##
 #######################
 if __name__ == '__main__':
-    builtins.app = app
-    builtins.helpers = helpers
-    builtins.sparql_escape = sparql_escape
-    app_file = os.environ.get('APP_ENTRYPOINT')
-    f = open('/app/__init__.py', 'w+')
-    f.close()
-    try:
-        exec("from ext.app.%s import *" % app_file)
-    except Exception as e:
-        helpers.log(str(e))
     debug = True if (os.environ.get('MODE') == "development") else False
     app.run(debug=debug, host='0.0.0.0', port=80)
