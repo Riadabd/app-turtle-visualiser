@@ -1,6 +1,7 @@
 import flask
 import os
 import helpers
+from importlib import import_module
 import builtins
 from escape_helpers import sparql_escape
 from rdflib.namespace import Namespace
@@ -36,11 +37,12 @@ SERVICE_RESOURCE_BASE = 'http://mu.semte.ch/services/'
 builtins.app = app
 builtins.helpers = helpers
 builtins.sparql_escape = sparql_escape
+
+# Import the app from the service consuming the template
 app_file = os.environ.get('APP_ENTRYPOINT')
-f = open('/app/__init__.py', 'w+')
-f.close()
 try:
-    exec("from ext.app.%s import *" % app_file)
+    module_path = 'ext.app.{}'.format(app_file)
+    import_module(module_path)
 except Exception as e:
     helpers.log(str(e))
 

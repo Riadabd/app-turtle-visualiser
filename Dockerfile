@@ -26,6 +26,7 @@ RUN ln -s /app /usr/src/app/ext \
      && pip3 install -r requirements.txt
 
 ONBUILD ADD . /app/
+ONBUILD RUN touch /app/__init__.py
 ONBUILD RUN cd /app/ \
     && if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
