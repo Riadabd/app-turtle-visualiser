@@ -124,10 +124,21 @@ Separate functions are available for different python datatypes, the `sparql_esc
 
 The `sparql_escape_uri`-function can be used for escaping URI's.
 
+## Deployment
 
-## Configuration
+Example snippet for adding a service to a docker-compose stack:
+```yml
+my-python:
+  image: my-python-service
+  environment:
+    LOG_LEVEL: "debug"
+```
 
-The template supports the following environment variables:
+### Environment variables
+
+- `LOG_LEVEL` takes the same options as defined in the Python [logging](https://docs.python.org/3/library/logging.html#logging-levels) module.
+
+- `MODE` to specify the deployment mode. Can be `development` as well as `production`. Defaults to `production`
 
 - `MU_SPARQL_ENDPOINT` is used to configure the SPARQL endpoint.
 
@@ -142,11 +153,6 @@ The template supports the following environment variables:
 - `MU_SPARQL_TIMEOUT` is used to configure the timeout (in seconds) for SPARQL queries.
 
 
-To use the template while developing your app, start a container in development mode with your code folder on the host machine mounted in `/app`:
+### Production
 
-    docker run --volume /path/to/your/code:/app
-               -e MODE=development
-               -p 80:80
-               -d semtech/mu-python-template
-
-).
+For hosting the app in a production setting, the template depends on [meinheld-gunicorn-docker](https://github.com/tiangolo/meinheld-gunicorn-docker). All [environment variables](https://github.com/tiangolo/meinheld-gunicorn-docker#environment-variables) used by meinheld-gunicorn can be used to configure your service as well.
