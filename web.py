@@ -1,10 +1,12 @@
-import flask
 import os
-import helpers
 from importlib import import_module
 import builtins
-from escape_helpers import sparql_escape
+
+import flask
 from rdflib.namespace import Namespace
+
+import helpers
+from escape_helpers import sparql_escape
 
 # WSGI variable name used by the server
 app = flask.Flask(__name__)
