@@ -7,7 +7,7 @@ Template for [mu.semte.ch](http://mu.semte.ch)-microservices written in Python3.
 Create a `Dockerfile` which extends the `semtech/mu-python-template`-image and set a maintainer.
 ```docker
 FROM semtech/mu-python-template
-MAINTAINER Sam Landuydt <sam.landuydt@gmail.com>
+LABEL maintainer="sam.landuydt@gmail.com"
 ```
 
 Create a `web.py` entrypoint-file. (naming of the entrypoint can be configured through `APP_ENTRYPOINT`)
@@ -32,9 +32,97 @@ You now should be able to access your service's endpoint
 curl localhost:8080/hello
 ```
 
-## Dependencies
+## Developing a microservice using the template
+
+### Dependencies
 
 If your service needs external libraries other than the ones already provided by the template (Flask, SPARQLWrapper and rdflib), you can specify those in a [`requirements.txt`](https://pip.pypa.io/en/stable/reference/pip_install/#requirements-file-format)-file. The template will take care of installing them when you build your Docker image.
+
+### Development mode
+
+By leveraging Dockers' [bind-mount](https://docs.docker.com/storage/bind-mounts/), you can mount your application code into an existing service image. This spares you from building a new image to test each change. On top of that, you can configure the environment variable `MODE` to `development`. That enables live-reloading of the server, so it immediately updates when you save a file.  
+
+example docker-compose parameters:
+```yml
+    environment:
+      MODE: "development"
+    volumes:
+      - /home/my/code/my-python-service:/app
+```
+
+### Helper methods
+
+The template provides the user with several helper methods. They aim to give you a step ahead for:
+
+- logging
+- JSONAPI-compliancy
+- SPARQL querying
+
+The below helpers can be imported from the `helpers` module. For example:
+```py
+from helpers import *
+```
+Available functions:
+#### log(msg)
+
+Works exactly the same as the [log](https://docs.python.org/3/library/logging.html#logging.log) method from pythons' logging module.
+Logs are written to the /logs directory in the docker container.
+
+#### generate_uuid()
+
+Generate a random UUID (String).
+
+#### session_id_header(request)
+
+Get the session id from the HTTP request headers.
+
+#### rewrite_url_header(request)
+
+Get the rewrite URL from the HTTP request headers.
+
+#### validate_json_api_content_type(request)
+
+Validate whether the Content-Type header contains the JSONAPI `content-type`-header. Returns a 400 otherwise.
+
+#### validate_resource_type(expected_type, data)
+
+Validate whether the type specified in the JSONAPI data is equal to the expected type. Returns a 409 otherwise.
+
+#### error(title, status = 400)
+
+Returns a JSONAPI compliant error response with the given status code (default: 400).
+
+#### query(query)
+
+Executes the given SPARQL select/ask/construct query.
+
+#### update(query)
+
+Executes the given SPARQL update query.
+
+
+The template provides one other helper module, being the `escape_helpers`-module. It contains functions for SPARQL query-escaping. Example import:
+```py
+from escape_helpers import *
+```
+
+ Available functions:
+#### sparql_escape ; sparql_escape_{string|uri|date|datetime|time|bool|int|float}(value)
+
+Converts the given object to a SPARQL-safe RDF object string with the right RDF-datatype.  
+This functions should be used especially when inserting user-input to avoid SPARQL-injection.
+
+Separate functions are available for different python datatypes, the `sparql_escape` function however can automatically select the right method to use, for following Python  datatypes:
+
+- `str`
+- `int`
+- `float`
+- `datetime.datetime`
+- `datetime.date`
+- `datetime.time`
+- `boolean`
+
+The `sparql_escape_uri`-function can be used for escaping URI's.
 
 
 ## Configuration
@@ -53,7 +141,6 @@ The template supports the following environment variables:
 
 - `MU_SPARQL_TIMEOUT` is used to configure the timeout (in seconds) for SPARQL queries.
 
-## Develop a microservice using the template
 
 To use the template while developing your app, start a container in development mode with your code folder on the host machine mounted in `/app`:
 
@@ -62,73 +149,4 @@ To use the template while developing your app, start a container in development 
                -p 80:80
                -d semtech/mu-python-template
 
-Code changes will be automatically picked up by Flask.
-
-## Helper methods
-The template provides the user with several helper methods. Most helpers can be used by calling: "helpers.<helperName>", except the sparql_escape helper: "sparql_escape(var)".
-
-### log(msg)
-
-The template provides a log object to the user for logging. Just do log("Hello world").
-The log level can be set through the LOG_LEVEL environment variable
- (default: info, values: debug, info, warning, error, critical).
-
-Logs are written to the /logs directory in the docker container.
-
-### generate_uuid()
-
-Generate a random UUID (String).
-
-### session_id_header(request)
-
-Get the session id from the HTTP request headers.
-
-### rewrite_url_header(request)
-
-Get the rewrite URL from the HTTP request headers.
-
-### validate_json_api_content_type(request)
-
-Validate whether the Content-Type header contains the JSONAPI Content-Type. Returns a 400 otherwise.
-
-### validate_resource_type(expected_type, data)
-
-Validate whether the type specified in the JSON data is equal to the expected type. Returns a 409 otherwise.
-
-### error(title, status = 400)
-
-Returns a JSONAPI compliant error response with the given status code (default: 400).
-
-### query(query)
-
-Executes the given SPARQL select/ask/construct query.
-
-### update(query)
-
-Executes the given SPARQL update query.
-
-### update_modified(subject, modified = datetime.now())
-
-Executes a SPARQL query to update the modification date of the given subject URI (string).
-The date defaults to now.
-
-### sparql_escape ; sparql_escape_{string|uri|date|datetime|time|bool|int|float}(value)
-This method can be used to avoid SPARQL injection by escaping user input while constructing a SPARQL query.
-The method checks the type of the given variable and returns the correct object string format,
-depending on the type of the object. Current supported variables are: `datetime.time`, `datetime.date`, `str`, `int`, `float` and `boolean`.
-For example:
-
-    query =  " INSERT DATA {"
-    query += "   GRAPH <http://mu.semte.ch/application> {"
-    query += "     < %s > a <foaf:Person> ;" % user_uri
-    query += "                   <foaf:name> %s ;" % sparql_escape(name)
-    query += "                   <dc:created> %s ." % sparql_escape(date)
-    query += "   }"
-    query += " }"
-    
-Next to the `sparql_escape`, the template also provides a helper function per datatype that takes any value as parameter. E.g. `sparql_escape_uri("http://mu.semte.ch/application")`.
-
-Next to the `sparql_escape`, the template also provides a helper function per datatype that takes any value as parameter. E.g. `sparql_escape_uri("http://mu.semte.ch/application")`.
-
-## Example
-There is one example method in the template: `GET /templateExample`. This method returns all triples in the triplestore from the SPARQL endpoint (beware for big databases!).
+).
