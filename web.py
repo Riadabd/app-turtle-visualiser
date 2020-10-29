@@ -36,5 +36,5 @@ except Exception as e:
 ## Start Application ##
 #######################
 if __name__ == '__main__':
-    debug = True if (os.environ.get('MODE') == "development") else False
+    debug = os.environ.get('MODE') == "development"
     app.run(debug=debug, host='0.0.0.0', port=80)
