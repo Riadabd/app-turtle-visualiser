@@ -124,6 +124,30 @@ Separate functions are available for different python datatypes, the `sparql_esc
 
 The `sparql_escape_uri`-function can be used for escaping URI's.
 
+### Writing SPARQL Queries
+
+The template itself is unopinionated when it comes to constructing SPARQL-queries. However, since Python's most common string formatting methods aren't a great fit for SPARQL queries, we hereby want to provide an example on how to construct a query based on [template strings](https://docs.python.org/3.8/library/string.html#template-strings) while keeping things readable.
+
+```py
+from string import Template
+from helpers import query
+from escape_helpers import sparql_escape_uri
+
+my_person = "http://example.com/me"
+query_template = Template("""
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?name
+WHERE {
+    $person a foaf:Person ;
+        foaf:firstName ?name .
+}
+""")
+query_string = query_template.substitute(person=sparql_escape_uri(my_person))
+query_result = query(query_string)
+```
+
 ## Deployment
 
 Example snippet for adding a service to a docker-compose stack:
