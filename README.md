@@ -89,9 +89,9 @@ Validate whether the Content-Type header contains the JSONAPI `content-type`-hea
 
 Validate whether the type specified in the JSONAPI data is equal to the expected type. Returns a 409 otherwise.
 
-#### error(title, status = 400)
+#### error(title, status=400, **kwargs)
 
-Returns a JSONAPI compliant error response with the given status code (default: 400).
+Returns a JSONAPI compliant error [Response object](https://flask.palletsprojects.com/en/1.1.x/api/#response-objects) with the given status code (default: 400). `kwargs` can be any other keys supported by [JSONAPI error objects](https://jsonapi.org/format/#error-objects).
 
 #### query(query)
 
