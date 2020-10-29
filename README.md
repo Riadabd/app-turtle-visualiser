@@ -65,8 +65,9 @@ from helpers import *
 Available functions:
 #### log(msg)
 
-Works exactly the same as the [log](https://docs.python.org/3/library/logging.html#logging.log) method from pythons' logging module.
-Logs are written to the /logs directory in the docker container.
+Works exactly the same as the [logging.info](https://docs.python.org/3/library/logging.html#logging.info) method from pythons' logging module.
+Logs are written to the /logs directory in the docker container.  
+Note that the `helpers` module also exposes `logger`, which is the [logger instance](https://docs.python.org/3/library/logging.html#logger-objects) used by the template. The methods provided by this instance can be used for more fine-grained logging.
 
 #### generate_uuid()
 

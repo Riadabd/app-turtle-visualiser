@@ -20,12 +20,12 @@ log_levels = {
 }
 log_dir = '/logs'
 if not os.path.exists(log_dir): os.makedirs(log_dir)
-thelogger = logging.getLogger('')
-thelogger.setLevel(log_levels.get(os.environ.get('LOG_LEVEL').upper()))
+logger = logging.getLogger('MU_PYTHON_TEMPLATE_LOGGER')
+logger.setLevel(log_levels.get(os.environ.get('LOG_LEVEL').upper()))
 fileHandler = logging.FileHandler("{0}/{1}.log".format(log_dir, 'logs'))
-thelogger.addHandler(fileHandler)
+logger.addHandler(fileHandler)
 consoleHandler = logging.StreamHandler(stream=sys.stdout)# or stderr?
-thelogger.addHandler(consoleHandler)
+logger.addHandler(consoleHandler)
 
 def generate_uuid():
     """Generates a unique user id based the host ID and current time"""
@@ -35,7 +35,7 @@ def generate_uuid():
 def log(msg, *args, **kwargs):
     """write a log message to the log file. Logs are written to the `/logs`
      directory in the docker container."""
-    thelogger.info(msg, *args, **kwargs)
+    return logger.info(msg, *args, **kwargs)
 
 
 def session_id_header(request):
