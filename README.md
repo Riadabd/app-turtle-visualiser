@@ -50,6 +50,11 @@ example docker-compose parameters:
       - /home/my/code/my-python-service:/app
 ```
 
+### Linting
+
+Since the template provides some dependencies that `pylint` doesn't know about while you're writing your services' code, pylint might unrightfully have some complaints. You can use the provided `template.pylintrc` as `.pylintrc`-file in your service. This configuration-file provides the necessary specifics for services based on the Python template.
+
+
 ### Helper methods
 
 The template provides the user with several helper methods. They aim to give you a step ahead for:
