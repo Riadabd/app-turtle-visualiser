@@ -58,6 +58,7 @@ def error(msg, status=400, **kwargs):
         "errors": [error_obj]
     })
     response.status_code = error_obj["status"]
+    response.headers["Content-Type"] = "application/vnd.api+json"
     return response
 
 
