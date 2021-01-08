@@ -3,7 +3,7 @@ import datetime
 import logging
 import os
 import sys
-from flask import jsonify
+from flask import jsonify, request
 from rdflib.namespace import DC
 from escape_helpers import sparql_escape
 from SPARQLWrapper import SPARQLWrapper, JSON
@@ -85,10 +85,19 @@ if os.environ.get('MU_SPARQL_TIMEOUT'):
     sparqlQuery.setTimeout(timeout)
     sparqlUpdate.setTimeout(timeout)
 
+MU_HEADERS = [
+    "HTTP_MU_CALL_ID",
+    "HTTP_MU_AUTH_ALLOWED_GROUPS",
+    "HTTP_MU_AUTH_USED_GROUPS"
+]
+
 def query(the_query):
     """Execute the given SPARQL query (select/ask/construct)on the tripple store and returns the results
     in the given returnFormat (JSON by default)."""
     log("execute query: \n" + the_query)
+    sparqlQuery.customHttpHeaders["HTTP_MU_SESSION_ID"] = session_id_header(request)
+    for header in MU_HEADERS:
+        sparqlQuery.customHttpHeaders[header] = request.headers.get(header)
     sparqlQuery.setQuery(the_query)
     return sparqlQuery.query().convert()
 
@@ -96,6 +105,9 @@ def query(the_query):
 def update(the_query):
     """Execute the given update SPARQL query on the tripple store,
     if the given query is no update query, nothing happens."""
+    sparqlQuery.customHttpHeaders["HTTP_MU_SESSION_ID"] = session_id_header(request)
+    for header in MU_HEADERS:
+        sparqlQuery.customHttpHeaders[header] = request.headers.get(header)
     sparqlUpdate.setQuery(the_query)
     if sparqlUpdate.isSparqlUpdateRequest():
         sparqlUpdate.query()
