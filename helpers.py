@@ -86,6 +86,7 @@ if os.environ.get('MU_SPARQL_TIMEOUT'):
     sparqlUpdate.setTimeout(timeout)
 
 MU_HEADERS = [
+    "HTTP_MU_SESSION_ID",
     "HTTP_MU_CALL_ID",
     "HTTP_MU_AUTH_ALLOWED_GROUPS",
     "HTTP_MU_AUTH_USED_GROUPS"
@@ -95,7 +96,6 @@ def query(the_query):
     """Execute the given SPARQL query (select/ask/construct)on the tripple store and returns the results
     in the given returnFormat (JSON by default)."""
     log("execute query: \n" + the_query)
-    sparqlQuery.customHttpHeaders["HTTP_MU_SESSION_ID"] = session_id_header(request)
     for header in MU_HEADERS:
         if header in request.headers:
             sparqlQuery.customHttpHeaders[header] = request.headers[header]
@@ -109,7 +109,6 @@ def query(the_query):
 def update(the_query):
     """Execute the given update SPARQL query on the tripple store,
     if the given query is no update query, nothing happens."""
-    sparqlQuery.customHttpHeaders["HTTP_MU_SESSION_ID"] = session_id_header(request)
     for header in MU_HEADERS:
         if header in request.headers:
             sparqlQuery.customHttpHeaders[header] = request.headers[header]
