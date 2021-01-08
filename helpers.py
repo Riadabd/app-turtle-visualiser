@@ -97,7 +97,11 @@ def query(the_query):
     log("execute query: \n" + the_query)
     sparqlQuery.customHttpHeaders["HTTP_MU_SESSION_ID"] = session_id_header(request)
     for header in MU_HEADERS:
-        sparqlQuery.customHttpHeaders[header] = request.headers.get(header)
+        if header in request.headers:
+            sparqlQuery.customHttpHeaders[header] = request.headers[header]
+        else: # Make sure headers used for a previous query are cleared
+            if header in request.customHttpHeaders:
+                del sparqlQuery.customHttpHeaders[header]
     sparqlQuery.setQuery(the_query)
     return sparqlQuery.query().convert()
 
@@ -107,7 +111,11 @@ def update(the_query):
     if the given query is no update query, nothing happens."""
     sparqlQuery.customHttpHeaders["HTTP_MU_SESSION_ID"] = session_id_header(request)
     for header in MU_HEADERS:
-        sparqlQuery.customHttpHeaders[header] = request.headers.get(header)
+        if header in request.headers:
+            sparqlQuery.customHttpHeaders[header] = request.headers[header]
+        else: # Make sure headers used for a previous query are cleared
+            if header in request.customHttpHeaders:
+                del sparqlQuery.customHttpHeaders[header]
     sparqlUpdate.setQuery(the_query)
     if sparqlUpdate.isSparqlUpdateRequest():
         sparqlUpdate.query()
