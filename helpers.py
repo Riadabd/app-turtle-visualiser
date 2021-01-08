@@ -39,13 +39,13 @@ def log(msg, *args, **kwargs):
 
 
 def session_id_header(request):
-    """returns the HTTP_MU_SESSION_ID header from the given request"""
-    return request.headers.get('HTTP_MU_SESSION_ID')
+    """returns the MU-SESSION-ID header from the given request"""
+    return request.headers.get('MU-SESSION-ID')
 
 
 def rewrite_url_header(request):
-    """return the HTTP_X_REWRTITE_URL header from the given request"""
-    return request.headers.get('HTTP_X_REWRITE_URL')
+    """return the X-REWRITE-URL header from the given request"""
+    return request.headers.get('X-REWRITE-URL')
 
 
 def error(msg, status=400, **kwargs):
@@ -86,10 +86,10 @@ if os.environ.get('MU_SPARQL_TIMEOUT'):
     sparqlUpdate.setTimeout(timeout)
 
 MU_HEADERS = [
-    "HTTP_MU_SESSION_ID",
-    "HTTP_MU_CALL_ID",
-    "HTTP_MU_AUTH_ALLOWED_GROUPS",
-    "HTTP_MU_AUTH_USED_GROUPS"
+    "MU-SESSION-ID",
+    "MU-CALL-ID",
+    "MU-AUTH-ALLOWED-GROUPS",
+    "MU-AUTH-USED-GROUPS"
 ]
 
 def query(the_query):
