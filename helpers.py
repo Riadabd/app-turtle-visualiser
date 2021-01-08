@@ -100,7 +100,7 @@ def query(the_query):
         if header in request.headers:
             sparqlQuery.customHttpHeaders[header] = request.headers[header]
         else: # Make sure headers used for a previous query are cleared
-            if header in request.customHttpHeaders:
+            if header in sparqlQuery.customHttpHeaders:
                 del sparqlQuery.customHttpHeaders[header]
     sparqlQuery.setQuery(the_query)
     return sparqlQuery.query().convert()
@@ -114,7 +114,7 @@ def update(the_query):
         if header in request.headers:
             sparqlQuery.customHttpHeaders[header] = request.headers[header]
         else: # Make sure headers used for a previous query are cleared
-            if header in request.customHttpHeaders:
+            if header in sparqlQuery.customHttpHeaders:
                 del sparqlQuery.customHttpHeaders[header]
     sparqlUpdate.setQuery(the_query)
     if sparqlUpdate.isSparqlUpdateRequest():
