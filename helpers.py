@@ -40,12 +40,12 @@ def log(msg, *args, **kwargs):
 
 def session_id_header(request):
     """returns the HTTP_MU_SESSION_ID header from the given request"""
-    return request.args.get('HTTP_MU_SESSION_ID')
+    return request.headers.get('HTTP_MU_SESSION_ID')
 
 
 def rewrite_url_header(request):
     """return the HTTP_X_REWRTITE_URL header from the given request"""
-    return request.args.get('HTTP_X_REWRITE_URL')
+    return request.headers.get('HTTP_X_REWRITE_URL')
 
 
 def error(msg, status=400, **kwargs):
