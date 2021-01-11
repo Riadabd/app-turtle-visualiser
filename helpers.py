@@ -111,10 +111,10 @@ def update(the_query):
     if the given query is no update query, nothing happens."""
     for header in MU_HEADERS:
         if header in request.headers:
-            sparqlQuery.customHttpHeaders[header] = request.headers[header]
+            sparqlUpdate.customHttpHeaders[header] = request.headers[header]
         else: # Make sure headers used for a previous query are cleared
-            if header in sparqlQuery.customHttpHeaders:
-                del sparqlQuery.customHttpHeaders[header]
+            if header in sparqlUpdate.customHttpHeaders:
+                del sparqlUpdate.customHttpHeaders[header]
     sparqlUpdate.setQuery(the_query)
     if sparqlUpdate.isSparqlUpdateRequest():
         sparqlUpdate.query()
