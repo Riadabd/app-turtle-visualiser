@@ -13,8 +13,8 @@ def sparql_escape_datetime(obj):
     if not isinstance(obj, datetime.datetime):
         warn("You are escaping something that isn't a datetime with \
         the 'sparql_escape_datetime'-method. Implicit casting will occurr.")
-        obj = datetime.datetime.fromisoformat(str(obj))
-    return '"{}"^^xsd:dateTime'.format(obj.isoformat(timespec="seconds"))
+        obj = datetime.datetime.fromisoformat(str(obj)) # only supports 3 or 6 digit microsecond notation (https://docs.python.org/3.7/library/datetime.html#datetime.datetime.fromisoformat)
+    return '"{}"^^xsd:dateTime'.format(obj.isoformat())
 
 def sparql_escape_date(obj):
     if not isinstance(obj, datetime.date):
@@ -27,8 +27,8 @@ def sparql_escape_time(obj):
     if not isinstance(obj, datetime.time):
         warn("You are escaping something that isn't a time with \
         the 'sparql_escape_time'-method. Implicit casting will occurr.")
-        obj = datetime.time.fromisoformat(str(obj))
-    return '"{}"^^xsd:time'.format(obj.isoformat(timespec="seconds"))
+        obj = datetime.time.fromisoformat(str(obj)) # only supports 3 or 6 digit microsecond notation (https://docs.python.org/3.7/library/datetime.html#datetime.time.fromisoformat)
+    return '"{}"^^xsd:time'.format(obj.isoformat())
 
 def sparql_escape_int(obj):
     if not isinstance(obj, int):
