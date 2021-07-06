@@ -138,16 +138,3 @@ def update_modified(subject, modified=datetime.datetime.now()):
     query += "   }"
     query += " }"
     update(query)
-
-# TODO: Not sure what this function is for, since strings are supposed to be escaped.
-def verify_string_parameter(parameter):
-    if parameter and type(parameter) is str:
-        if "insert" in parameter.lower(): return error("unauthorized insert in string parameter")
-        if "delete" in parameter.lower(): return error("unauthorized delete in string parameter")
-        if "load" in parameter.lower(): return error("unauthorized load in string parameter")
-        if "clear" in parameter.lower(): return error("unauthorized clear in string parameter")
-        if "create" in parameter.lower(): return error("unauthorized create in string parameter")
-        if "drop" in parameter.lower(): return error("unauthorized drop in string parameter")
-        if "copy" in parameter.lower(): return error("unauthorized copy in string parameter")
-        if "move" in parameter.lower(): return error("unauthorized move in string parameter")
-        if "add" in parameter.lower(): return error("unauthorized add in string parameter")
