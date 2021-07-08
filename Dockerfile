@@ -1,6 +1,17 @@
-FROM python:2.7
-MAINTAINER Sam Landuydt "sam.landuydt@gmail.com"
+FROM tiangolo/meinheld-gunicorn:python3.8
+MAINTAINER Michaël Dierick "michael@dierick.io"
 
+# Gunicorn Docker config
+ENV MODULE_NAME web
+ENV PYTHONPATH "/usr/src/app"
+ENV WEB_CONCURRENCY "1"
+
+# Overrides the start.sh used in `tiangolo/meinheld-gunicorn`
+COPY ./start.sh /start.sh
+RUN chmod +x /start.sh
+
+
+# Template config
 ENV APP_ENTRYPOINT web
 ENV LOG_LEVEL info
 ENV MU_SPARQL_ENDPOINT 'http://database:8890/sparql'
@@ -13,12 +24,11 @@ ADD . /usr/src/app
 
 RUN ln -s /app /usr/src/app/ext \
      && cd /usr/src/app \
-     && pip install -r requirements.txt
+     && pip3 install -r requirements.txt
 
 ONBUILD ADD . /app/
+ONBUILD RUN touch /app/__init__.py
 ONBUILD RUN cd /app/ \
     && if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-EXPOSE 80
 
-CMD python web.py

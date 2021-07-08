@@ -1,31 +1,169 @@
 # Mu Python template
 
-Template for running Python microservices
+Template for [mu.semte.ch](http://mu.semte.ch)-microservices written in Python3. Based on the [Flask](https://palletsprojects.com/p/flask/)-framework.
 
-## Using the template
+## Quickstart
 
-1) Extend the `semtech/mu-python-template` and set a maintainer.
+Create a `Dockerfile` which extends the `semtech/mu-python-template`-image and set a maintainer.
+```docker
+FROM semtech/mu-python-template
+LABEL maintainer="sam.landuydt@gmail.com"
+```
 
-2) Configure your entrypoint through the environment variable `APP_ENTRYPOINT` (default: `web.py`).
+Create a `web.py` entrypoint-file. (naming of the entrypoint can be configured through `APP_ENTRYPOINT`)
+```python
+@app.route("/hello")
+def hello():
+    return "Hello from the mu-python-template!"
+```
 
-3) Write the python requirements in a requirements.txt file. (Flask, SPARQLWrapper and rdflib are standard installed)
+Build the Docker-image for your service
+```sh
+docker build -t my-python-service .
+```
 
-Create the entry point file and add methods with URL's. 
-The flask app is added to the python builtin and can be accessed by using the app variable, as shown in following example:
+Run your service
+```sh
+docker run -p 8080:80
+```
 
-    @app.route("/exampleMethod")
-    def exampleMethod():
-        return example
+You now should be able to access your service's endpoint
+```sh
+curl localhost:8080/hello
+```
 
-## Example Dockerfile
+## Developing a microservice using the template
 
-    FROM semtech/mu-python-template
-    MAINTAINER Sam Landuydt <sam.landuydt@gmail.com>
-    # ONBUILD of mu-python-template takes care of everything
+### Dependencies
 
-## Configuration
+If your service needs external libraries other than the ones already provided by the template (Flask, SPARQLWrapper and rdflib), you can specify those in a [`requirements.txt`](https://pip.pypa.io/en/stable/reference/pip_install/#requirements-file-format)-file. The template will take care of installing them when you build your Docker image.
 
-The template supports the following environment variables:
+### Development mode
+
+By leveraging Dockers' [bind-mount](https://docs.docker.com/storage/bind-mounts/), you can mount your application code into an existing service image. This spares you from building a new image to test each change. Just mount your services' folder to the containers' `/app`. On top of that, you can configure the environment variable `MODE` to `development`. That enables live-reloading of the server, so it immediately updates when you save a file.  
+
+example docker-compose parameters:
+```yml
+    environment:
+      MODE: "development"
+    volumes:
+      - /home/my/code/my-python-service:/app
+```
+
+### Helper methods
+
+The template provides the user with several helper methods. They aim to give you a step ahead for:
+
+- logging
+- JSONAPI-compliancy
+- SPARQL querying
+
+The below helpers can be imported from the `helpers` module. For example:
+```py
+from helpers import *
+```
+Available functions:
+#### log(msg)
+
+Works exactly the same as the [logging.info](https://docs.python.org/3/library/logging.html#logging.info) method from pythons' logging module.
+Logs are written to the /logs directory in the docker container.  
+Note that the `helpers` module also exposes `logger`, which is the [logger instance](https://docs.python.org/3/library/logging.html#logger-objects) used by the template. The methods provided by this instance can be used for more fine-grained logging.
+
+#### generate_uuid()
+
+Generate a random UUID (String).
+
+#### session_id_header(request)
+
+Get the session id from the HTTP request headers.
+
+#### rewrite_url_header(request)
+
+Get the rewrite URL from the HTTP request headers.
+
+#### validate_json_api_content_type(request)
+
+Validate whether the Content-Type header contains the JSONAPI `content-type`-header. Returns a 400 otherwise.
+
+#### validate_resource_type(expected_type, data)
+
+Validate whether the type specified in the JSONAPI data is equal to the expected type. Returns a 409 otherwise.
+
+#### error(title, status=400, **kwargs)
+
+Returns a JSONAPI compliant error [Response object](https://flask.palletsprojects.com/en/1.1.x/api/#response-objects) with the given status code (default: 400). `kwargs` can be any other keys supported by [JSONAPI error objects](https://jsonapi.org/format/#error-objects).
+
+#### query(query)
+
+Executes the given SPARQL select/ask/construct query.
+
+#### update(query)
+
+Executes the given SPARQL update query.
+
+
+The template provides one other helper module, being the `escape_helpers`-module. It contains functions for SPARQL query-escaping. Example import:
+```py
+from escape_helpers import *
+```
+
+ Available functions:
+#### sparql_escape ; sparql_escape_{string|uri|date|datetime|time|bool|int|float}(value)
+
+Converts the given object to a SPARQL-safe RDF object string with the right RDF-datatype.  
+This functions should be used especially when inserting user-input to avoid SPARQL-injection.
+
+Separate functions are available for different python datatypes, the `sparql_escape` function however can automatically select the right method to use, for following Python  datatypes:
+
+- `str`
+- `int`
+- `float`
+- `datetime.datetime`
+- `datetime.date`
+- `datetime.time`
+- `boolean`
+
+The `sparql_escape_uri`-function can be used for escaping URI's.
+
+### Writing SPARQL Queries
+
+The template itself is unopinionated when it comes to constructing SPARQL-queries. However, since Python's most common string formatting methods aren't a great fit for SPARQL queries, we hereby want to provide an example on how to construct a query based on [template strings](https://docs.python.org/3.8/library/string.html#template-strings) while keeping things readable.
+
+```py
+from string import Template
+from helpers import query
+from escape_helpers import sparql_escape_uri
+
+my_person = "http://example.com/me"
+query_template = Template("""
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?name
+WHERE {
+    $person a foaf:Person ;
+        foaf:firstName ?name .
+}
+""")
+query_string = query_template.substitute(person=sparql_escape_uri(my_person))
+query_result = query(query_string)
+```
+
+## Deployment
+
+Example snippet for adding a service to a docker-compose stack:
+```yml
+my-python:
+  image: my-python-service
+  environment:
+    LOG_LEVEL: "debug"
+```
+
+### Environment variables
+
+- `LOG_LEVEL` takes the same options as defined in the Python [logging](https://docs.python.org/3/library/logging.html#logging-levels) module.
+
+- `MODE` to specify the deployment mode. Can be `development` as well as `production`. Defaults to `production`
 
 - `MU_SPARQL_ENDPOINT` is used to configure the SPARQL endpoint.
 
@@ -39,79 +177,9 @@ The template supports the following environment variables:
 
 - `MU_SPARQL_TIMEOUT` is used to configure the timeout (in seconds) for SPARQL queries.
 
-## Develop a microservice using the template
 
-To use the template while developing your app, start a container in development mode with your code folder on the host machine mounted in `/app`:
+Since this template is based on the meinheld-gunicorn-docker image, all possible environment config for that image is also available for the template. See [meinheld-gunicorn-docker#environment-variables](https://github.com/tiangolo/meinheld-gunicorn-docker#environment-variables) for more info. The template configures `WEB_CONCURRENCY` in particular to `1` by default.
 
-    docker run --volume /path/to/your/code:/app
-               -e MODE=development
-               -d semtech/mu-python-template
+### Production
 
-Code changes will be automatically picked up by Flask.
-
-## Helper methods
-The template provides the user with several helper methods. Most helpers can be used by calling: "helpers.<helperName>", except the sparql_escape helper: "sparql_escape(var)".
-
-### log(msg)
-
-The template provides a log object to the user for logging. Just do log("Hello world").
-The log level can be set through the LOG_LEVEL environment variable
- (default: info, values: debug, info, warning, error, critical).
-
-Logs are written to the /logs directory in the docker container.
-
-### generate_uuid()
-
-Generate a random UUID (String).
-
-### session_id_header(request)
-
-Get the session id from the HTTP request headers.
-
-### rewrite_url_header(request)
-
-Get the rewrite URL from the HTTP request headers.
-
-### validate_json_api_content_type(request)
-
-Validate whether the Content-Type header contains the JSONAPI Content-Type. Returns a 400 otherwise.
-
-### validate_resource_type(expected_type, data)
-
-Validate whether the type specified in the JSON data is equal to the expected type. Returns a 409 otherwise.
-
-### error(title, status = 400)
-
-Returns a JSONAPI compliant error response with the given status code (default: 400).
-
-### query(query)
-
-Executes the given SPARQL select/ask/construct query.
-
-### update(query)
-
-Executes the given SPARQL update query.
-
-### update_modified(subject, modified = datetime.now())
-
-Executes a SPARQL query to update the modification date of the given subject URI (string).
-The date defaults to now.
-
-### sparql_escape ; sparql_escape_{string|uri|date|datetime|time|bool|int|float}(value)
-This method can be used to avoid SPARQL injection by escaping user input while constructing a SPARQL query.
-The method checks the type of the given variable and returns the correct object string format,
-depending on the type of the object. Current supported variables are: `datetime.time`, `datetime.date`, `str`, `int`, `float` and `boolean`.
-For example:
-
-    query =  " INSERT DATA {"
-    query += "   GRAPH <http://mu.semte.ch/application> {"
-    query += "     < %s > a <foaf:Person> ;" % user_uri
-    query += "                   <foaf:name> %s ;" % sparql_escape(name)
-    query += "                   <dc:created> %s ." % sparql_escape(date)
-    query += "   }"
-    query += " }"
-    
-Next to the `sparql_escape`, the template also provides a helper function per datatype that takes any value as parameter. E.g. `sparql_escape_uri("http://mu.semte.ch/application")`.
-
-## Example
-There is one example method in the template: `GET /templateExample`. This method returns all triples in the triplestore from the SPARQL endpoint (beware for big databases!).
+For hosting the app in a production setting, the template depends on [meinheld-gunicorn-docker](https://github.com/tiangolo/meinheld-gunicorn-docker). All [environment variables](https://github.com/tiangolo/meinheld-gunicorn-docker#environment-variables) used by meinheld-gunicorn can be used to configure your service as well.
