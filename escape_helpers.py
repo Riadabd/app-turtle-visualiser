@@ -53,7 +53,7 @@ def sparql_escape_bool(obj):
 
 def sparql_escape_uri(obj):
     obj = str(obj)
-    return '<' + re.sub(r'[\\\'"]', lambda s: "\\" + s.group(0), obj) + '>'
+    return '<' + re.sub(r'[\\"]', lambda s: "\\" + s.group(0), obj) + '>'
 
 def sparql_escape(obj):
     if isinstance(obj, str):
