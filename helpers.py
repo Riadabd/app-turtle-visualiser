@@ -64,9 +64,9 @@ def error(msg, status=400, **kwargs):
 
 def validate_json_api_content_type(request):
     """Validate whether the content type of the request is application/vnd.api+json."""
-    if "/^application/vnd.api+json" not in request.args.get('CONTENT_TYPE'):
-        return error("Content-Type must be application/vnd.api+json instead of" +
-                     request.args.get('CONTENT_TYPE'))
+    if "application/vnd.api+json" not in request.content_type:
+        return error("Content-Type must be application/vnd.api+json instead of " +
+                     request.content_type)
 
 
 def validate_resource_type(expected_type, data):
