@@ -3,10 +3,13 @@ from importlib import import_module
 import builtins
 
 import flask
+from flask import jsonify, request, Response
 from rdflib.namespace import Namespace
 
 import helpers
 from escape_helpers import sparql_escape
+
+from rdf import create_graph, read_graph_render
 
 # WSGI variable name used by the server
 app = flask.Flask(__name__)
@@ -31,6 +34,23 @@ try:
     import_module(module_path)
 except Exception as e:
     helpers.log(str(e))
+
+
+@app.route('/hello')
+def hello():
+    return jsonify({"hello": "Hello from turtle-visualiser!"})
+
+
+@app.route('/graph', methods=['POST'])
+def graph():
+    headers = {'Content-Type': 'image/png'}
+    turtle_input = request.data
+    if (not turtle_input):
+        return Response(headers=headers, status=204)
+    else:
+        create_graph(turtle_input)
+        return Response(read_graph_render(), headers=headers)
+
 
 #######################
 ## Start Application ##

@@ -22,6 +22,9 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 ADD . /usr/src/app
 
+RUN apt update
+RUN apt install --no-install-recommends --assume-yes graphviz
+
 RUN ln -s /app /usr/src/app/ext \
      && cd /usr/src/app \
      && pip3 install -r requirements.txt
