@@ -5,14 +5,14 @@ import random
 
 
 def read_graph_render():
-    with open('./renders/graph.gv.png', 'rb') as f:
+    with open('./renders/graph.gv.svg', 'rb') as f:
         image = f.read()
 
     return image
 
 
 def create_graph(turtle_input):
-    dot = graphviz.Digraph('graph', comment='Turtle Graph', format='png')
+    dot = graphviz.Digraph('graph', comment='Turtle Graph', format='svg')
     graph = Graph()
 
     graph.parse(data=turtle_input)

@@ -43,7 +43,7 @@ def hello():
 
 @app.route('/graph', methods=['POST'])
 def graph():
-    headers = {'Content-Type': 'image/png'}
+    headers = {'Content-Type': 'image/svg'}
     turtle_input = request.data
     if (not turtle_input):
         return Response(headers=headers, status=204)
